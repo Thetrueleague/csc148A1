@@ -22,7 +22,7 @@ This module contains the Container and PriorityQueue classes.
 
 from typing import Any, List, Callable
 
-hello
+
 class Container:
     """A container that holds Objects.
 
