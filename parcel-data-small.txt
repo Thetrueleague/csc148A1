@@ -1,3 +1,0 @@
-53, Woodstock, Mississauga, 150
-764, Kingston, Hamilton, 100
-644, Oakville, London, 50
