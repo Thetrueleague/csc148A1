@@ -58,7 +58,69 @@ class Scheduler:
 
 
 # TODO: Implement classes RandomScheduler and GreedyScheduler.
+class RandomScheduler(Scheduler):
+    """A random scheduler, randomly decide what parcels go onto which trucks.
 
+    === Public Attributes ===
+    truck:
+      The delivery truck that is being chosen randomly.
+    parcels:
+      The parcel that needs to be delivered.
+
+    === Private Attributes ===
+
+    === Representation Invariants ===
+    - No parcels have the depot as their destination.
+    - Each truck has its own unique id.
+    """
+
+    def __init__(self): --> None:
+    """Initialize the class.
+
+    """
+
+
+    def schedule(self, parcels: List[Parcel], trucks: List[Truck],
+                     verbose: bool = False) -> List[Parcel]:
+       """Schedule the given <parcels> onto a random chosen truck.
+
+        Mutate the Truck objects in <trucks> so that they store information
+        about which parcel objects they will deliver and what route they will
+        take.  Do *not* mutate the list <parcels>, or any of the parcel objects
+        in that list.
+
+        Return a list containing the parcels that did not get scheduled onto any
+        truck, due to lack of capacity.
+
+        If <verbose> is True, print step-by-step details regarding
+        the scheduling algorithm as it runs.  This is *only* for debugging
+        purposes for your benefit, so the content and format of this
+        information is your choice; we will not test your code with <verbose>
+        set to True.
+        """
+
+
+
+class GreedyScheduler(Scheduler):
+    """A systematic scheduler, strategically decide what parcels go onto which trucks.
+
+    === Public Attributes ===
+    truck:
+      The delivery truck that is being chosen randomly.
+    parcels:
+      The parcel that needs to be delivered.
+
+    === Private Attributes ===
+
+    === Representation Invariants ===
+    - No parcels have the depot as their destination.
+    - Each truck has its own unique id.
+    """
+
+    def __init__(self):
+
+    def schedule(self, parcels: List[Parcel], trucks: List[Truck],
+                     verbose: bool = False) -> List[Parcel]:
 
 if __name__ == '__main__':
     import doctest
