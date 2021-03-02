@@ -89,7 +89,7 @@ class Truck:
     current: int
     id: int
 
-    def __init__(self, id_: int, vol: int, depot) -> None:
+    def __init__(self, id_: int, vol: int, depot: str) -> None:
         """Instantiates the class <Truck> with <id_> and <vol>.
 
         precondition: <vol> > 0
@@ -117,8 +117,7 @@ class Truck:
             self.parcels.append(p)
             self.routes.append(p.destiny)
             return True
-        else:
-            return False
+        return False
 
     def fullness(self) -> float:
         """Return the percentage of fullness for this truck.
