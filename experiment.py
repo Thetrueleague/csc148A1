@@ -87,8 +87,12 @@ class SchedulingExperiment:
         in Assignment 1.
         """
         self.verbose = config['verbose']
-        # TODO: Use <config> to determine what sort of scheduler we need.
-        # TODO: Then make one of that sort and save it in self.scheduler.
+        if config['algorithm'] == 'random':     # might need to be changed.
+            self.scheduler = RandomScheduler()
+        else:
+            self.scheduler = GreedyScheduler(config['parcel_priority'],
+                                             config['parcel_order'],
+                                             config['truck_order'])
 
         self.parcels = read_parcels(config['parcel_file'])
         self.fleet = read_trucks(config['truck_file'],
@@ -177,7 +181,7 @@ def read_distance_map(distance_map_file: str) -> DistanceMap:
     Precondition: <distance_map_file> is the path to a file containing distance
                   data in the form specified in Assignment 1.
     """
-    # TODO: Initialize any variable(s) as needed.
+    dm = DistanceMap()
     with open(distance_map_file, 'r') as file:
         for line in file:
             tokens = line.strip().split(',')
@@ -186,8 +190,8 @@ def read_distance_map(distance_map_file: str) -> DistanceMap:
             distance1 = int(tokens[2].strip())
             distance2 = int(tokens[3].strip()) if len(tokens) == 4 \
                 else distance1
-            # TODO: Do something with c1, c2, distance1, and distance2
-    # TODO: Return something.
+            dm.add_distance(c1, c2, distance1, distance2)
+    return dm
 
 
 def read_trucks(truck_file: str, depot_location: str) -> Fleet:
