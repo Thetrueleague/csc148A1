@@ -20,20 +20,143 @@ Sophia Huynh, Maryam Majedi, and Jaisie Sin.
 This module contains the classes required to represent the entities
 in the simulation: Parcel, Truck and Fleet.
 """
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from distance_map import DistanceMap
 
 
 class Parcel:
-    # TODO: Implement this class!
-    # It must be consistent with the Fleet class docstring examples below.
-    pass
+    """ A parcel that contain an unique ID, source, destiny, and volume.
+
+    === Public Attributes ===
+    id:
+      The unique id of this parcel.
+    source:
+      Where the parcel is from.
+    destiny:
+      Where the parcel needs to be delivered to.
+    volume:
+      The volume of this parcel.
+
+    === Representation Invariants ===
+    - <_id> can only occur once for parcels of <_parcels>.
+    - <_volume> is a positive integer.
+    - No parcels have the depot as their destination.
+    """
+    id: int
+    source: str
+    destiny: str
+    volume: int
+
+    def __init__(self, id_: int, vol: int, sour: str, dest: str) -> None:
+        """Instantiates the Parcel class. <id_> is the unique id of this parcel,
+        <vol> is the volume, <sour> is where the parcel came from, and <dest> is
+        its destination.
+
+        precondition: <vol> > 0
+        """
+        self.id = id_
+        self.volume = vol
+        self.source = sour
+        self.destiny = dest
 
 
 class Truck:
-    # TODO: Implement this class!
-    # It must be consistent with the Fleet class docstring examples below.
-    pass
+    """ A truck that contains information of its capacity and id.
+
+    === Public Attributes ===
+    capacity:
+      Determines how much this truck can hold.
+    routes:
+      A list of places the truck needs to go to.
+    parcels:
+      A list of <Parcel> that were stored in the truck.
+    current:
+      The current volume of stuff in this truck.
+    id:
+      The unique id of this truck.
+
+    === Private Attributes ===
+
+    === Representation Invariants ===
+    - len(routes) == 1 initially, with only the depot city in it.
+    - Each truck has a unique _id, that is, no two
+    trucks can have the same _id.
+    - <capacity> is a positive integer
+    """
+    capacity: int
+    routes: List[str]
+    parcels: List[Parcel]
+    current: int
+    id: int
+
+    def __init__(self, id_: int, vol: int, depot) -> None:
+        """Instantiates the class <Truck> with <id_> and <vol>.
+
+        precondition: <vol> > 0
+        """
+        self.id = id_
+        self.capacity = vol
+        self.routes = [depot]
+        self.current = 0
+        self.parcels = []
+
+    def pack(self, p: Parcel) -> bool:
+        """Add <p> parcel into the truck. Return True if and only if <p> is
+        packed into <Truck>. Return False otherwise.
+
+        >>> t1 = Truck(1, 100, 'Toronto')
+        >>> p1 = Parcel(1, 20, 'Toronto', 'Guelph')
+        >>> t1.pack(p1)
+        True
+        >>> p2 = Parcel(2, 90, 'Toronto', 'Montreal')
+        >>> t1.pack(p2)
+        False
+        """
+        if self.capacity - self.current >= p.volume:
+            self.current += p.volume
+            self.parcels.append(p)
+            self.routes.append(p.destiny)
+            return True
+        else:
+            return False
+
+    def fullness(self) -> float:
+        """Return the percentage of fullness for this truck.
+
+        precondition: <self.current> <= <self.capacity>
+
+        >>> t1 = Truck(1, 100, 'Toronto')
+        >>> p1 = Parcel(1, 20, 'Toronto', 'Guelph')
+        >>> t1.pack(p1)
+        True
+        >>> t1.fullness()
+        20.0
+        >>> p2 = Parcel(2, 90, 'Toronto', 'Montreal')
+        >>> t1.pack(p2)
+        False
+        >>> t1.fullness()
+        20.0
+        >>> p3 = Parcel(3, 50, 'Toronto', 'Montreal')
+        >>> t1.pack(p3)
+        True
+        >>> t1.fullness()
+        70.0
+        """
+        return self.current * 100 / self.capacity
+
+    def is_empty(self) -> bool:
+        """Return True if <self> is empty, false otherwise.
+
+        >>> t1 = Truck(1, 100, 'Toronto')
+        >>> t1.is_empty()
+        True
+        >>> p1 = Parcel(1, 20, 'Toronto', 'Guelph')
+        >>> t1.pack(p1)
+        True
+        >>> t1.is_empty()
+        False
+        """
+        return self.fullness() == 0
 
 
 class Fleet:
@@ -52,8 +175,7 @@ class Fleet:
         >>> f.num_trucks()
         0
         """
-        # TODO: Complete this method.
-        pass
+        self.trucks = []
 
     def add_truck(self, truck: Truck) -> None:
         """Add <truck> to this fleet.
@@ -67,8 +189,7 @@ class Fleet:
         >>> f.num_trucks()
         1
         """
-        # TODO: Complete this method.
-        pass
+        self.trucks.append(truck)
 
     # We will not test the format of the string that you return -- it is up
     # to you.
@@ -87,8 +208,7 @@ class Fleet:
         >>> f.num_trucks()
         1
         """
-        # TODO: Complete this method.
-        pass
+        return len(self.trucks)
 
     def num_nonempty_trucks(self) -> int:
         """Return the number of non-empty trucks in this fleet.
@@ -116,8 +236,11 @@ class Fleet:
         >>> f.num_nonempty_trucks()
         2
         """
-        # TODO: Complete this method.
-        pass
+        num = 0
+        for truck in self.trucks:
+            if not truck.is_empty():
+                num += 1
+        return num
 
     def parcel_allocations(self) -> Dict[int, List[int]]:
         """Return a dictionary in which each key is the ID of a truck in this
@@ -141,8 +264,12 @@ class Fleet:
         >>> f.parcel_allocations() == {1423: [27, 12], 1333: [28]}
         True
         """
-        # TODO: Complete this method.
-        pass
+        d = {}
+        for truck in self.trucks:
+            d[truck.id] = []
+            for parcel in truck.parcels:
+                d[truck.id].append(parcel.id)
+        return d
 
     def total_unused_space(self) -> int:
         """Return the total unused space, summed over all non-empty trucks in
@@ -160,8 +287,11 @@ class Fleet:
         >>> f.total_unused_space()
         995
         """
-        # TODO: Complete this method.
-        pass
+        space = 0
+        for truck in self.trucks:
+            if not truck.is_empty():
+                space += truck.capacity - truck.current
+        return space
 
     def _total_fullness(self) -> float:
         """Return the sum of truck.fullness() for each non-empty truck in the
@@ -180,8 +310,11 @@ class Fleet:
         >>> f._total_fullness()
         50.0
         """
-        # TODO: Complete this method.
-        pass
+        num = 0.0
+        for truck in self.trucks:
+            if not truck.is_empty():
+                num += truck.fullness()
+        return num
 
     def average_fullness(self) -> float:
         """Return the average percent fullness of all non-empty trucks in the
@@ -198,8 +331,7 @@ class Fleet:
         >>> f.average_fullness()
         50.0
         """
-        # TODO: Complete this method.
-        pass
+        return self._total_fullness() / self.num_nonempty_trucks()
 
     def total_distance_travelled(self, dmap: DistanceMap) -> int:
         """Return the total distance travelled by the trucks in this fleet,
@@ -225,8 +357,12 @@ class Fleet:
         >>> f.total_distance_travelled(m)
         36
         """
-        # TODO: Complete this method.
-        pass
+        distance = 0
+        for truck in self.trucks:
+            for i in range(1, len(truck.routes)):
+                distance += dmap.distance(truck.routes[i-1], truck.routes[i])
+            distance += dmap.distance(truck.routes[-1], truck.routes[0])
+        return distance
 
     def average_distance_travelled(self, dmap: DistanceMap) -> float:
         """Return the average distance travelled by the trucks in this fleet,
@@ -257,8 +393,7 @@ class Fleet:
         >>> f.average_distance_travelled(m)
         18.0
         """
-        # TODO: Complete this method.
-        pass
+        return self.total_distance_travelled(dmap) / len(self.trucks)
 
 
 if __name__ == '__main__':
