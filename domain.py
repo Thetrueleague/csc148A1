@@ -20,7 +20,7 @@ Sophia Huynh, Maryam Majedi, and Jaisie Sin.
 This module contains the classes required to represent the entities
 in the simulation: Parcel, Truck and Fleet.
 """
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from distance_map import DistanceMap
 
 
