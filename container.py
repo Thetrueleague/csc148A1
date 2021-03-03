@@ -122,8 +122,8 @@ class PriorityQueue(Container):
             self._queue.insert(0, item)
             for i in range(1, len(self._queue)):
                 if self._higher_priority(self._queue[i - 1], self._queue[i]):
-                    self._queue[i - 1], self._queue[i] = self._queue[i], \
-                                                         self._queue[i - 1]
+                    self._queue[i - 1], self._queue[i] = \
+                        self._queue[i], self._queue[i - 1]
 
     def remove(self) -> Any:
         """Remove and return the next item from this PriorityQueue.
@@ -163,10 +163,12 @@ class PriorityQueue(Container):
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-import-modules': ['doctest', 'python_ta', 'typing'],
         'disable': ['E1136'],
         'max-attributes': 15,
     })
     import doctest
+
     doctest.testmod()
