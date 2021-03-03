@@ -87,7 +87,7 @@ class SchedulingExperiment:
         in Assignment 1.
         """
         self.verbose = config['verbose']
-        if config['algorithm'] == 'random':     # might need to be changed.
+        if config['algorithm'] == 'random':  # might need to be changed.
             self.scheduler = RandomScheduler()
         else:
             self.scheduler = GreedyScheduler(config['parcel_priority'],
@@ -114,8 +114,9 @@ class SchedulingExperiment:
         If <self.verbose> is True, print step-by-step details
         regarding the scheduling algorithm as it runs.
         """
-        # TODO: Ask the scheduler to schedule the parcels onto trucks.
-        # TODO: Save the unscheduled parcels in self._unscheduled.
+        self._unscheduled = self.scheduler.schedule(self.parcels,
+                                                    self.fleet.trucks,
+                                                    self.verbose)
 
         self._compute_stats()
         if report:
@@ -129,14 +130,14 @@ class SchedulingExperiment:
 
         Precondition: _run has already been called.
         """
-        # TODO: Replace the 0 values below with the correct statistics.
+        unused = self.fleet.num_trucks() - self.fleet.num_nonempty_trucks()
         self._stats = {
-            'fleet': 0,
-            'unused_trucks': 0,
-            'avg_distance': 0,
-            'avg_fullness': 0,
-            'unused_space': 0,
-            'unscheduled': 0
+            'fleet': self.fleet.num_trucks(),
+            'unused_trucks': unused,
+            'avg_distance': self.fleet.average_distance_travelled(self.dmap),
+            'avg_fullness': self.fleet.average_fullness(),
+            'unused_space': self.fleet.total_unused_space(),
+            'unscheduled': len(self._unscheduled)
         }
 
     def _print_report(self) -> None:
@@ -148,8 +149,6 @@ class SchedulingExperiment:
 
         Precondition: _compute_stats has already been called.
         """
-        # TODO: Implement this method!
-        pass
 
 
 # ----- Helper functions -----
@@ -161,7 +160,7 @@ def read_parcels(parcel_file: str) -> List[Parcel]:
     Precondition: <parcel_file> is the path to a file containing parcel data in
                   the form specified in Assignment 1.
     """
-    # TODO: Initialize any variable(s) as needed.
+    parcels = []
     # read and add the parcels to the list.
     with open(parcel_file, 'r') as file:
         for line in file:
@@ -170,8 +169,8 @@ def read_parcels(parcel_file: str) -> List[Parcel]:
             source = tokens[1].strip()
             destination = tokens[2].strip()
             volume = int(tokens[3].strip())
-            # TODO: Do something with pid, source, destination and volume.
-    # TODO: Return something.
+            parcels.append(Parcel(pid, volume, source, destination))
+    return parcels
 
 
 def read_distance_map(distance_map_file: str) -> DistanceMap:
@@ -201,14 +200,14 @@ def read_trucks(truck_file: str, depot_location: str) -> Fleet:
     Precondition: <truck_file> is a path to a file containing truck data in the
                   form specified in Assignment 1.
     """
-    # TODO: Initialize any variable(s) as needed.
+    fleet = Fleet()
     with open(truck_file, 'r') as file:
         for line in file:
             tokens = line.strip().split(',')
             tid = int(tokens[0])
             capacity = int(tokens[1])
-            # TODO: Do something with tid, capacity, and depot_location.
-    # TODO: Return something.
+            fleet.trucks.append(Truck(tid, capacity, depot_location))
+    return fleet
 
 
 def simple_check(config_file: str) -> None:
@@ -229,6 +228,7 @@ def simple_check(config_file: str) -> None:
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-io': ['read_parcels', 'read_distance_map', 'read_trucks',
                        '_print_report', 'simple_check'],

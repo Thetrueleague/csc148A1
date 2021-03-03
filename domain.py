@@ -108,14 +108,22 @@ class Truck:
         >>> p1 = Parcel(1, 20, 'Toronto', 'Guelph')
         >>> t1.pack(p1)
         True
+        >>> t1.routes == ['Toronto', 'Guelph']
+        True
         >>> p2 = Parcel(2, 90, 'Toronto', 'Montreal')
         >>> t1.pack(p2)
         False
+        >>> p3 = Parcel(3, 10, 'Toronto', 'Guelph')
+        >>> t1.pack(p3)
+        True
+        >>> t1.routes == ['Toronto', 'Guelph']
+        True
         """
         if self.capacity - self.current >= p.volume:
             self.current += p.volume
             self.parcels.append(p)
-            self.routes.append(p.destiny)
+            if self.routes[-1] != p.destiny:
+                self.routes.append(p.destiny)
             return True
         return False
 
@@ -157,6 +165,18 @@ class Truck:
         """
         return self.fullness() == 0
 
+    def unused_space(self) -> int:
+        """Return the unused space for this truck.
+
+        >>> t1 = Truck(1, 100, 'Toronto')
+        >>> p1 = Parcel(1, 20, 'Toronto', 'Guelph')
+        >>> t1.pack(p1)
+        True
+        >>> t1.unused_space()
+        80
+        """
+        return self.capacity - self.current
+
 
 class Fleet:
     """ A fleet of trucks for making deliveries.
@@ -195,8 +215,6 @@ class Fleet:
     def __str__(self) -> str:
         """Produce a string representation of this fleet
         """
-        # TODO: Complete this method.
-        pass
 
     def num_trucks(self) -> int:
         """Return the number of trucks in this fleet.
@@ -289,7 +307,7 @@ class Fleet:
         space = 0
         for truck in self.trucks:
             if not truck.is_empty():
-                space += truck.capacity - truck.current
+                space += truck.unused_space()
         return space
 
     def _total_fullness(self) -> float:
