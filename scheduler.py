@@ -21,7 +21,7 @@ This module contains the abstract Scheduler class, as well as the two
 subclasses RandomScheduler and GreedyScheduler, which implement the two
 scheduling algorithms described in the handout.
 """
-from typing import List
+from typing import List, Dict, Union
 from random import shuffle, choice
 from container import PriorityQueue
 from domain import Parcel, Truck
@@ -128,15 +128,15 @@ class GreedyScheduler(Scheduler):
     _par: str
     _trk: str
 
-    def __init__(self, priority: str, par_order: str, trk_order: str) -> None:
-        """Instantiate the class. <priority> is the parcel_priority from config:
-        either 'volume' or 'destination'. <par_order> is the parcel_order from
-        config: either 'non-decreasing' or 'non-increasing'. <trk_order> is the
+    def __init__(self, config: Dict[str, Union[str, bool]]) -> None:
+        """Instantiate the class. <_priority> is the parcel_priority from
+        config: either 'volume' or 'destination'. <_par> is the parcel_order
+        from config: either 'non-decreasing' or 'non-increasing'. <_trk> is the
         truck_order from config: either 'non-decreasing' or 'non-increasing'.
         """
-        self._priority = priority
-        self._par = par_order
-        self._trk = trk_order
+        self._priority = config['parcel_priority']
+        self._par = config['parcel_order']
+        self._trk = config['truck_order']
 
     def schedule(self, parcels: List[Parcel], trucks: List[Truck],
                  verbose: bool = False) -> List[Parcel]:
@@ -179,6 +179,9 @@ class GreedyScheduler(Scheduler):
                 temp = _find_best_truck(use_truck, self._trk)
                 temp.pack(parcel)
         return unscheduled
+
+
+# ----- Helper functions -----
 
 
 def _find_best_truck(trucks: List[Truck], order: str) -> Truck:
