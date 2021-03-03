@@ -410,7 +410,7 @@ class Fleet:
         >>> f.average_distance_travelled(m)
         18.0
         """
-        return self.total_distance_travelled(dmap) / len(self.trucks)
+        return self.total_distance_travelled(dmap) / self.num_nonempty_trucks()
 
 
 if __name__ == '__main__':
