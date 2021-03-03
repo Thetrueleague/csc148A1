@@ -378,7 +378,8 @@ class Fleet:
         for truck in self.trucks:
             for i in range(1, len(truck.routes)):
                 distance += dmap.distance(truck.routes[i - 1], truck.routes[i])
-            distance += dmap.distance(truck.routes[-1], truck.routes[0])
+            if truck.routes[-1] != truck.routes[0]:
+                distance += dmap.distance(truck.routes[-1], truck.routes[0])
         return distance
 
     def average_distance_travelled(self, dmap: DistanceMap) -> float:
